@@ -83,8 +83,8 @@ fi
 # already been recorded in the `migrations` table and never drops data.
 if [ "${RUN_MIGRATIONS}" = "true" ]; then
     echo "Running pending migrations (non-destructive)..."
-    # php artisan migrate --force --no-interaction
-    php artisan migrate:fresh --force
+    php artisan migrate --force --no-interaction
+    # php artisan migrate:fresh --force
 else
     echo "Skipping migrations because RUN_MIGRATIONS=${RUN_MIGRATIONS:-false}."
 fi
