@@ -95,21 +95,21 @@ class RoomApiController extends Controller
                 $occupiedBeds = $activeTenants->pluck('bed_no')->toArray();
 
                 $bedTenants = $activeTenants->mapWithKeys(function ($t) {
-                    return [$t->bed_no => trim((string) $t->name)];
+                    return [(string) $t->bed_no => trim((string) $t->name)];
                 });
 
                 return response()->json([
                     'data' => [
                         'public_id' => $room->public_id,
                         'room_no' => $room->room_no,
-                        'category_id' => (string) $room->category?->id,
+                        'category_id' => $room->category ? (string) $room->category->id : null,
                         'category_name' => $room->category?->category_name,
                         'rent_amount' => (float) $room->rent_amount,
                         'bed_capacity' => (int) $room->bed_capacity,
                         'status' => $room->status,
-                        'pg_id' => (string) $room->pg?->id,
+                        'pg_id' => $room->pg ? (string) $room->pg->id : null,
                         'occupied_beds' => $occupiedBeds,
-                        'bed_tenants' => $bedTenants,
+                        'bed_tenants' => (object) $bedTenants->toArray(),
                         'created_at' => $room->created_at?->toIso8601String(),
                     ],
                 ]);

@@ -69,5 +69,21 @@ it('does not shorten multi-word tenant names in bed_tenants', function () {
 
     $this->getJson(route('api.room.show', $room->public_id))
         ->assertOk()
+        ->assertJsonPath('data.occupied_beds', ['B'])
         ->assertJsonPath('data.bed_tenants.B', 'Mohan Lal Verma');
+});
+
+it('serializes bed_tenants as an empty object when the room has no tenants', function () {
+    Sanctum::actingAs($this->user);
+    $pg = PgManagement::factory()->create();
+    $room = Room::factory()->create(['pg_id' => $pg->id, 'bed_capacity' => 3]);
+
+    $response = $this->getJson(route('api.room.show', $room->public_id))
+        ->assertOk()
+        ->assertJsonPath('data.occupied_beds', []);
+
+    $payload = json_decode($response->getContent());
+
+    expect($payload->data->bed_tenants)->toBeInstanceOf(stdClass::class)
+        ->and((array) $payload->data->bed_tenants)->toBe([]);
 });
